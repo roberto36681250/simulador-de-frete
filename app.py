@@ -2,14 +2,16 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from urllib.parse import quote
 import requests
+from urllib.parse import quote
+import os
 
 app = FastAPI()
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-GOOGLE_API_KEY = "AIzaSyCG1_Zi4GC8DvOjUSxYYz8Iqml_Kp3VUIA"  # Chave já integrada
+GOOGLE_API_KEY = "AIzaSyCG1r6G2pk_v0cV6t5yEV_tAaobWxUSUic"  # já integrada
 
 @app.get("/", response_class=HTMLResponse)
 async def form(request: Request):
@@ -35,39 +37,39 @@ async def gerar_anuncio(
     volume_m3 = volume_unit / 1_000_000
     volume_total = volume_m3 * quantidade
 
-    # Distância via Google Maps API
-    distancia_valor = ""
+    # Chamada à API do Google Maps
     try:
         url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origem)}&destinations={quote(destino)}&key={GOOGLE_API_KEY}"
         response = requests.get(url)
         data = response.json()
         distancia_valor = data["rows"][0]["elements"][0]["distance"]["text"]
-    except:
-        distancia_valor = "Não foi possível calcular"
+    except Exception:
+        distancia_valor = "Erro ao calcular distância"
 
-    resultado = f"""
-    Olá, bom dia! Estou em busca de frete para entrega de {quantidade} {produto}.<br>
-    📦 Peso por unidade: {peso:.2f} kg<br>
-    ⚖️ Peso total aproximado: {peso_total:.2f} kg<br>
-    📏 Medidas por unidade (cm): Altura {altura}, Comprimento {comprimento}, Largura {largura}<br>
-    📦 Volumetria: {volume_unit:,.0f} cm³ ({volume_m3:,.3f} m³)<br>
-    🧭 Distância estimada: {distancia_valor}<br>
-    📍 Origem: {origem}<br>
-    📬 Destino: {destino}<br>
-    💰 Valor da carga (NF): R$ {valor_nf}<br>
-    📆 Data de retirada: {data_retirada}<br>
-    📝 Observações: {observacoes}<br><br>
-    Interessados, favor entrar em contato no privado com valor do frete, disponibilidade e tipo de veículo. Obrigado!
-    """
+    # Texto formatado
+    resultado = (
+        f"Olá, bom dia! Estou em busca de frete para entrega de {quantidade} {produto}.\n"
+        f"📦 Peso por unidade: {peso} kg\n"
+        f"⚖️ Peso total aproximado: {peso_total:.2f} kg\n"
+        f"📏 Medidas por unidade (cm): Altura {altura}, Comprimento {comprimento}, Largura {largura}\n"
+        f"📦 Volumetria: {volume_unit:.0f} cm³ ({volume_m3:.3f} m³)\n"
+        f"🛣️ Distância estimada: {distancia_valor}\n"
+        f"📍 Origem: {origem}\n"
+        f"📬 Destino: {destino}\n"
+        f"💰 Valor da carga (NF): R$ {valor_nf}\n"
+        f"📆 Data de retirada: {data_retirada}\n"
+        f"📝 Observações: {observacoes}\n\n"
+        "Interessados, favor entrar em contato no privado com valor do frete, disponibilidade e tipo de veículo. Obrigado!"
+    )
 
-    # CORREÇÃO: processar replace FORA da f-string
-    mensagem_whatsapp = resultado.replace("<br>", "\n")
-    whatsapp_url = f"https://wa.me/?text={quote(mensagem_whatsapp)}"
+    # Link WhatsApp com encode
+    whatsapp_text = quote(resultado)
+    whatsapp_url = f"https://wa.me/?text={whatsapp_text}"
 
     return templates.TemplateResponse("form.html", {
         "request": request,
-        "resultado": resultado,
-        "distancia": f"{distancia_valor}",
+        "resultado": resultado.replace("\n", "<br>"),
+        "volume_total": f"{volume_total:.3f}".replace(".", ","),
+        "distancia_valor": distancia_valor,
         "whatsapp_url": whatsapp_url
     })
-

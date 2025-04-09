@@ -2,11 +2,12 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from urllib.parse import quote
 import requests
+from urllib.parse import quote
 import os
 
 app = FastAPI()
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -36,8 +37,7 @@ async def gerar_anuncio(
     volume_m3 = volume_unit / 1_000_000
     volume_total = volume_m3 * quantidade
 
-    # Distância
-    distancia_valor = ""
+    # Distância com API do Google
     try:
         url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origem)}&destinations={quote(destino)}&key={GOOGLE_API_KEY}"
         response = requests.get(url)
@@ -46,14 +46,12 @@ async def gerar_anuncio(
     except:
         distancia_valor = "Erro ao calcular distância"
 
-    volume_m3_str = str(volume_m3).replace(".", ",")  # vírgula no lugar do ponto
-
     resultado = f"""
     Olá, bom dia! Estou em busca de frete para entrega de {quantidade} {produto}.<br>
     📦 <strong>Peso por unidade:</strong> {peso} kg<br>
     ⚖️ <strong>Peso total aproximado:</strong> {peso_total:.2f} kg<br>
-    📐 <strong>Medidas por unidade (cm):</strong> Altura {altura}, Comprimento {comprimento}, Largura {largura}<br>
-    🧮 <strong>Volumetria:</strong> {volume_unit:.0f} cm³ ({volume_m3_str} m³)<br>
+    📏 <strong>Medidas por unidade (cm):</strong> Altura {altura}, Comprimento {comprimento}, Largura {largura}<br>
+    📦 <strong>Volumetria:</strong> {volume_unit:.0f} cm³ ({volume_m3:.1f} m³)<br>
     🚛 <strong>Distância estimada:</strong> {distancia_valor}<br>
     📍 <strong>Origem:</strong> {origem}<br>
     📬 <strong>Destino:</strong> {destino}<br>
@@ -68,6 +66,6 @@ async def gerar_anuncio(
     return templates.TemplateResponse("form.html", {
         "request": request,
         "resultado": resultado,
-        "distancia": f"{distancia_valor}",
+        "distancia": f"🚛 Distância estimada: {distancia_valor}",
         "whatsapp_url": whatsapp_url
     })

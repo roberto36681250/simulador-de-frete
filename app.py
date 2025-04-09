@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
@@ -81,7 +81,7 @@ async def simular(
         f"📏 *Medidas por unidade (cm):* Altura {altura}, Comprimento {comprimento}, Largura {largura}\n"
         f"📐 *Volumetria:* {int(volume_cm3 * quantidade)} cm³ ({volume_total_m3_str} m³)\n"
         f"📍 *Origem:* {origem}\n"
-        f"🏁 *Destino:* {destino}\n"
+        f"📍 *Destino:* {destino}\n"
         f"💰 *Valor da carga (NF):* R$ {valor_nf_str}\n"
         f"📅 *Data de retirada:* {data_br}\n"
         f"📝 *Observações:* {observacoes or ''}\n\n"

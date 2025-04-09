@@ -1,41 +1,49 @@
-
+<!-- templates/form.html -->
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador de Anúncio de Frete</title>
+    <title>Simulador de Frete</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Gerador de Anúncio de Frete</h1>
-    <form method="post">
-        <label>Produto/Carga</label>
-        <input type="text" name="produto"><br>
-        <label>Quantidade</label>
-        <input type="number" name="quantidade"><br>
-        <label>Peso por unidade (kg)</label>
-        <input type="text" name="peso"><br>
-        <label>Altura (cm)</label>
-        <input type="text" name="altura"><br>
-        <label>Comprimento (cm)</label>
-        <input type="text" name="comprimento"><br>
-        <label>Largura (cm)</label>
-        <input type="text" name="largura"><br>
-        <label>Origem</label>
-        <input type="text" name="origem"><br>
-        <label>Destino</label>
-        <input type="text" name="destino"><br>
-        <label>Valor da carga (R$)</label>
-        <input type="text" name="valor_nf"><br>
-        <label>Data de retirada</label>
-        <input type="text" name="data_retirada"><br>
-        <label>Observações</label>
-        <input type="text" name="observacoes"><br>
-        <button type="submit">Gerar Anúncio</button>
-    </form>
-    <hr>
-    <h3>Distância estimada: {{ distancia|safe }}</h3>
-    <div style="border:1px solid #ccc; padding:10px;">
-        {{ resultado|safe }}
+    <div class="container">
+        <h1>Gerador de Anúncio de Frete</h1>
+        <form method="post">
+            <input type="text" name="produto" placeholder="Produto/Carga" required>
+            <input type="number" name="quantidade" placeholder="Quantidade" required>
+            <input type="number" step="any" name="peso" placeholder="Peso por unidade (kg)" required>
+            <input type="number" step="any" name="altura" placeholder="Altura (cm)" required>
+            <input type="number" step="any" name="comprimento" placeholder="Comprimento (cm)" required>
+            <input type="text" name="largura" placeholder="Largura (cm)" required>
+            <input type="text" name="origem" placeholder="Origem" required>
+            <input type="text" name="destino" placeholder="Destino" required>
+            <input type="text" name="valor_nf" placeholder="Valor da carga (R$)" required>
+            <input type="date" name="data_retirada" required>
+            <textarea name="observacoes" placeholder="Observações"></textarea>
+            <button type="submit">Gerar Anúncio</button>
+        </form>
+
+        {% if resultado %}
+            <div class="resultado">
+                <h2>{{ distancia|safe }}</h2>
+                <p id="texto-anuncio">{{ resultado|safe }}</p>
+
+                <div class="botoes">
+                    <button onclick="window.print()">Gerar PDF</button>
+                    <a id="link-whatsapp" target="_blank">Compartilhar no WhatsApp</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
+
+    <script>
+        const texto = document.getElementById("texto-anuncio")?.innerText;
+        const linkWhatsapp = document.getElementById("link-whatsapp");
+        if (linkWhatsapp && texto) {
+            const encoded = encodeURIComponent(texto);
+            linkWhatsapp.href = `https://wa.me/?text=${encoded}`;
+        }
+    </script>
 </body>
 </html>

@@ -18,7 +18,7 @@
             <label>Largura (cm):<input type="text" name="largura"></label>
             <label>Origem:<input type="text" name="origem"></label>
             <label>Destino:<input type="text" name="destino"></label>
-            <label>Valor da carga (R$):<input type="text" name="valor"></label>
+            <label>Valor da carga (R$):<input type="text" name="valor_nf"></label>
             <label>Data de retirada:<input type="date" name="data_retirada"></label>
             <label>Observações:<input type="text" name="observacoes"></label>
 
@@ -29,17 +29,16 @@
 
         {% if distancia %}
             <div class="resultado">
-                <h2>📏 {{ distancia|safe }}</h2>
+                <h2>{{ distancia|safe }}</h2>
             </div>
         {% endif %}
 
         {% if resultado %}
             <div class="resultado">
                 <div class="bloco-anuncio">{{ resultado|safe }}</div>
-
                 <div class="btn-group">
                     <a href="#" class="btn" onclick="window.print()">🧾 PDF</a>
-                    <a href="https://wa.me/?text={{ resultado|urlencode }}" target="_blank" class="btn">📤 WhatsApp</a>
+                    <a href="{{ whatsapp_url }}" target="_blank" class="btn">📤 WhatsApp</a>
                 </div>
             </div>
         {% endif %}

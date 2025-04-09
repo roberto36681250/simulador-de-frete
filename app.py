@@ -11,7 +11,7 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-GOOGLE_API_KEY = "AIzaSyCG1r6G2pk_v0cV6t5yEV_tAaobWxUSUic"  # Chave do usuário
+GOOGLE_API_KEY = "AIzaSyCG1r6G2pk_v0cV6t5yEV_tAaobWxUSUic"  # Sua chave já integrada
 
 @app.get("/", response_class=HTMLResponse)
 async def form(request: Request):
@@ -37,14 +37,14 @@ async def gerar_anuncio(
     volume_m3 = volume_unit / 1_000_000
     volume_total = volume_m3 * quantidade
 
-    # Distância com API do Google
+    # Distância com API do Google Maps
     distancia_valor = ""
     try:
         url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origem)}&destinations={quote(destino)}&key={GOOGLE_API_KEY}"
         response = requests.get(url)
         data = response.json()
         distancia_valor = data["rows"][0]["elements"][0]["distance"]["text"]
-    except Exception as e:
+    except Exception:
         distancia_valor = "Erro ao calcular distância"
 
     resultado = f"""
@@ -60,19 +60,28 @@ async def gerar_anuncio(
     📝 <b>Observações:</b> {observacoes}
     """
 
-    mensagem = f"""
-Olá, bom dia! Estou em busca de frete para entrega de {quantidade} {produto}.
-{resultado.replace('<br>', '\n').replace('<b>', '').replace('</b>', '')}
+    # 🔧 Montar mensagem para WhatsApp sem usar f-string com \n diretamente
+    texto_mensagem = (
+        f"Olá, bom dia! Estou em busca de frete para entrega de {quantidade} {produto}.\n"
+        f"Peso por unidade: {peso} kg\n"
+        f"Peso total aproximado: {peso_total:.2f} kg\n"
+        f"Medidas por unidade (cm): Altura {altura}, Comprimento {comprimento}, Largura {largura}\n"
+        f"Volumetria: {volume_unit:.0f} cm³ ({volume_m3:.3f} m³)\n"
+        f"Distância estimada: {distancia_valor}\n"
+        f"Origem: {origem}\n"
+        f"Destino: {destino}\n"
+        f"Valor da carga (NF): R$ {valor_nf}\n"
+        f"Data de retirada: {data_retirada}\n"
+        f"Observações: {observacoes}\n\n"
+        "Interessados, favor entrar em contato no privado com valor do frete, disponibilidade e tipo de veículo. Obrigado!"
+    )
 
-Interessados, favor entrar em contato no privado com valor do frete, disponibilidade e tipo de veículo. Obrigado!
-    """.strip()
-
-    whatsapp_url = f"https://wa.me/?text={quote(mensagem)}"
+    whatsapp_url = f"https://wa.me/?text={quote(texto_mensagem)}"
 
     return templates.TemplateResponse("form.html", {
         "request": request,
         "resultado": resultado,
         "distancia": f"📦 <b>Volumetria total estimada:</b> {volume_total:.3f} m³ &nbsp; 🚛 <b>Distância:</b> {distancia_valor}",
         "whatsapp_url": whatsapp_url,
-        "mensagem": mensagem
+        "mensagem": texto_mensagem
     })

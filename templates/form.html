@@ -1,100 +1,68 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Gerador de Anúncio de Frete</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      padding: 2rem;
-      background-color: #f8f9fa;
-    }
-    .result-box {
-      background: #fff;
-      border-radius: 8px;
-      padding: 2rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      margin-top: 2rem;
-    }
-    .btn-custom {
-      background-color: #28a745;
-      color: white;
-    }
-    .btn-custom:hover {
-      background-color: #218838;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Gerador de Anúncio de Frete</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #28a745;
+        }
+        textarea {
+            height: 80px;
+        }
+        .resultado {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
-  <h1 class="mb-4"><span>🚛</span> Gerador de Anúncio de Frete</h1>
+    <h1>🚚 Gerador de Anúncio de Frete</h1>
+    <form method="post" action="/simular" class="row g-3">
+        {% for campo, valor in {
+            'produto': 'Produto/Carga',
+            'quantidade': 'Quantidade',
+            'peso': 'Peso por unidade (kg)',
+            'altura': 'Altura (cm)',
+            'comprimento': 'Comprimento (cm)',
+            'largura': 'Largura (cm)',
+            'origem': 'Origem',
+            'destino': 'Destino',
+            'valor_nf': 'Valor da carga (R$)',
+            'data_retirada': 'Data de retirada',
+            'observacoes': 'Observações'
+        }.items() %}
+        <div class="col-md-{{ 6 if campo != 'observacoes' else 12 }}">
+            {% if campo == 'data_retirada' %}
+                <label class="form-label">{{ valor }}</label>
+                <input type="date" name="{{ campo }}" class="form-control" value="{{ form_data[campo] if form_data and campo in form_data else '' }}">
+            {% elif campo == 'observacoes' %}
+                <label class="form-label">{{ valor }}</label>
+                <textarea name="{{ campo }}" class="form-control">{{ form_data[campo] if form_data and campo in form_data else '' }}</textarea>
+            {% else %}
+                <label class="form-label">{{ valor }}</label>
+                <input type="{{ 'number' if campo not in ['produto','origem','destino'] else 'text' }}" name="{{ campo }}" class="form-control" value="{{ form_data[campo] if form_data and campo in form_data else '' }}">
+            {% endif %}
+        </div>
+        {% endfor %}
+        <div class="col-12">
+            <button type="submit" class="btn btn-success">➕ Gerar Anúncio</button>
+        </div>
+    </form>
 
-  <form id="freteForm">
-    <div class="row mb-3">
-      <div class="col-md-3">
-        <input type="text" class="form-control" name="produto" placeholder="Produto/Carga" required>
-      </div>
-      <div class="col-md-2">
-        <input type="number" class="form-control" name="quantidade" placeholder="Quantidade" required>
-      </div>
-      <div class="col-md-3">
-        <input type="number" class="form-control" name="peso_unitario" step="0.01" placeholder="Peso por unidade (kg)" required>
-      </div>
-      <div class="col-md-2">
-        <input type="number" class="form-control" name="altura" step="0.01" placeholder="Altura (cm)" required>
-      </div>
-      <div class="col-md-2">
-        <input type="number" class="form-control" name="comprimento" step="0.01" placeholder="Comprimento (cm)" required>
-      </div>
+    {% if resultado %}
+    <div class="resultado">
+        <p>{{ resultado|safe }}</p>
+        <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-outline-primary mt-2">📤 Compartilhar no WhatsApp</a>
     </div>
-
-    <div class="row mb-3">
-      <div class="col-md-2">
-        <input type="number" class="form-control" name="largura" step="0.01" placeholder="Largura (cm)" required>
-      </div>
-      <div class="col-md-3">
-        <input type="text" class="form-control" name="origem" placeholder="Origem" required>
-      </div>
-      <div class="col-md-3">
-        <input type="text" class="form-control" name="destino" placeholder="Destino" required>
-      </div>
-      <div class="col-md-2">
-        <input type="number" class="form-control" name="valor_nf" placeholder="Valor da carga (R$)" required>
-      </div>
-      <div class="col-md-2">
-        <input type="date" class="form-control" name="data_retirada" required>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <textarea class="form-control" name="observacoes" placeholder="Observações" rows="2"></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-custom">➕ Gerar Anúncio</button>
-  </form>
-
-  <div id="resultado" class="result-box mt-4" style="display:none;"></div>
-
-  <script>
-    document.getElementById("freteForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
-
-      const response = await fetch("/simular", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-
-      const html = await response.text();
-      document.getElementById("resultado").style.display = "block";
-      document.getElementById("resultado").innerHTML = html;
-    });
-  </script>
+    {% endif %}
 </body>
 </html>

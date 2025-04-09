@@ -7,19 +7,19 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">🚚 Gerador de Anúncio de Frete</h1>
+        <h1 class="title">🚛 Gerador de Anúncio de Frete</h1>
 
         <form method="post" class="frete-form">
-            <label>Produto/Carga:<input type="text" name="produto"></label>
-            <label>Quantidade:<input type="number" name="quantidade"></label>
-            <label>Peso por unidade (kg):<input type="number" step="0.01" name="peso"></label>
-            <label>Altura (cm):<input type="number" step="0.1" name="altura"></label>
-            <label>Comprimento (cm):<input type="number" step="0.1" name="comprimento"></label>
-            <label>Largura (cm):<input type="text" name="largura"></label>
-            <label>Origem:<input type="text" name="origem"></label>
-            <label>Destino:<input type="text" name="destino"></label>
-            <label>Valor da carga (R$):<input type="text" name="valor_nf"></label>
-            <label>Data de retirada:<input type="date" name="data_retirada"></label>
+            <label>Produto/Carga:<input type="text" name="produto" required></label>
+            <label>Quantidade:<input type="number" name="quantidade" required></label>
+            <label>Peso por unidade (kg):<input type="number" step="0.01" name="peso" required></label>
+            <label>Altura (cm):<input type="number" step="0.1" name="altura" required></label>
+            <label>Comprimento (cm):<input type="number" step="0.1" name="comprimento" required></label>
+            <label>Largura (cm):<input type="number" step="0.1" name="largura" required></label>
+            <label>Origem:<input type="text" name="origem" required></label>
+            <label>Destino:<input type="text" name="destino" required></label>
+            <label>Valor da carga (R$):<input type="text" name="valor_nf" required></label>
+            <label>Data de retirada:<input type="date" name="data_retirada" required></label>
             <label>Observações:<input type="text" name="observacoes"></label>
 
             <div class="btn-group">
@@ -29,7 +29,7 @@
 
         {% if distancia %}
             <div class="resultado">
-                <h2>{{ distancia|safe }}</h2>
+                <h2>📏 {{ distancia|safe }}</h2>
             </div>
         {% endif %}
 

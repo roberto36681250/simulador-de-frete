@@ -2,19 +2,27 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 import math
-import urllib.parse
+import os
+from dotenv import load_dotenv
+import pdfkit
+from fastapi.responses import FileResponse
+from urllib.parse import quote
+
+load_dotenv()
 
 app = FastAPI()
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
-def form(request: Request):
+async def form(request: Request):
     return templates.TemplateResponse("form.html", {"request": request})
 
 @app.post("/", response_class=HTMLResponse)
-def generate_ad(
+async def gerar_anuncio(
     request: Request,
     produto: str = Form(...),
     quantidade: int = Form(...),
@@ -28,56 +36,31 @@ def generate_ad(
     data_retirada: str = Form(...),
     observacoes: str = Form("")
 ):
-    try:
-        import openai
-        from geopy.distance import geodesic
-        from geopy.geocoders import Nominatim
-    except ImportError:
-        import subprocess
-        subprocess.run(["pip", "install", "geopy"])
-        from geopy.distance import geodesic
-        from geopy.geocoders import Nominatim
-
     peso_total = quantidade * peso
-    volume_cm3 = altura * comprimento * largura
-    volume_m3 = volume_cm3 / 1_000_000
+    volume_m3 = (altura * comprimento * largura) / 1000000
+    volumetria_cm3 = altura * comprimento * largura
 
-    try:
-        geolocator = Nominatim(user_agent="frete-app")
-        location_origem = geolocator.geocode(origem)
-        location_destino = geolocator.geocode(destino)
-        if location_origem and location_destino:
-            origem_coords = (location_origem.latitude, location_origem.longitude)
-            destino_coords = (location_destino.latitude, location_destino.longitude)
-            distancia_km = round(geodesic(origem_coords, destino_coords).km, 1)
-        else:
-            distancia_km = "Não foi possível calcular"
-    except:
-        distancia_km = "Não foi possível calcular"
+    mensagem = f"""
+Olá, bom dia!
+Estou em busca de frete para entrega de {quantidade} {produto}.
 
-    mensagem_whatsapp = f"""Olá, bom dia!%0AEstou em busca de frete para entrega de {quantidade} {produto}.%0A%0A📦 Peso por unidade: {peso:.1f} kg%0A⚖️ Peso total aproximado: {peso_total:.2f} kg%0A📏 Medidas por unidade: {altura} x {comprimento} x {largura} cm%0A📐 Volumetria: {volume_cm3:.0f} cm³ ({volume_m3:.3f} m³)%0A📍 Distância estimada: {distancia_km} km%0A%0A🚚 Origem: {origem}%0A📬 Destino: {destino}%0A%0A💰 Valor da carga (NF): R$ {valor:.2f}%0A📆 Data de retirada: {data_retirada}%0A📝 Observações: {observacoes or 'Nenhuma'}%0A%0AInteressados, favor entrar em contato no privado com valor do frete, disponibilidade e tipo de veículo. Obrigado!"""
+📦 Peso por unidade: {peso} kg
+⚖️ Peso total aproximado: {peso_total:.2f} kg
+📐 Medidas por unidade (cm): Altura {altura}, Comprimento {comprimento}, Largura {largura}
+📏 Volumetria: {volumetria_cm3:.0f} cm³ ({volume_m3:.3f} m³)
+📍 Origem: {origem}
+📬 Destino: {destino}
+💰 Valor da carga (NF): R$ {valor:.2f}
+📆 Data de retirada: {data_retirada}
+📝 Observações: {observacoes or 'Nenhuma'}
 
-    mensagem_exibida = mensagem_whatsapp.replace("%0A", "<br>")
-    link_whatsapp = f"https://wa.me/?text={mensagem_whatsapp}"
+Interessados, favor entrar em contato no privado com valor do frete, disponibilidade e tipo de veículo. Obrigado!
+"""
 
     return templates.TemplateResponse("form.html", {
         "request": request,
-        "produto": produto,
-        "quantidade": quantidade,
-        "peso": peso,
+        "mensagem": mensagem,
         "peso_total": peso_total,
-        "altura": altura,
-        "comprimento": comprimento,
-        "largura": largura,
-        "volume_cm3": volume_cm3,
-        "volume_m3": volume_m3,
-        "origem": origem,
-        "destino": destino,
-        "valor": valor,
-        "data_retirada": data_retirada,
-        "observacoes": observacoes,
-        "distancia_km": distancia_km,
-        "mensagem_exibida": mensagem_exibida,
-        "mensagem_pura": urllib.parse.unquote(mensagem_whatsapp.replace("%0A", "\n")),
-        "link_whatsapp": link_whatsapp
+        "volume_m3": volume_m3
     })
+

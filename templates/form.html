@@ -1,35 +1,59 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Gerador de Anúncio de Frete</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>🚚 Gerador de Anúncio de Frete</h1>
-    <form method="post">
-        <label>Produto/Carga: <input type="text" name="produto"></label>
-        <label>Quantidade: <input type="number" name="quantidade"></label>
-        <label>Peso por unidade (kg): <input type="number" name="peso" step="0.01"></label><br>
-        <label>Altura (cm): <input type="number" name="altura"></label>
-        <label>Comprimento (cm): <input type="number" name="comprimento"></label>
-        <label>Largura (cm): <input type="number" name="largura"></label><br>
-        <label>Origem: <input type="text" name="origem"></label>
-        <label>Destino: <input type="text" name="destino"></label><br>
-        <label>Valor da carga (R$): <input type="text" name="valor_nf"></label>
-        <label>Data de retirada: <input type="date" name="data_retirada"></label><br>
-        <label>Observações: <input type="text" name="observacoes"></label><br><br>
-        <button type="submit">📄 Gerar Anúncio</button>
-    </form>
+    <div class="container">
+        <h1>🚛 Gerador de Anúncio de Frete</h1>
+        <form method="post">
+            <div class="row">
+                <label>Produto/Carga:</label>
+                <input name="produto">
+                <label>Quantidade:</label>
+                <input name="quantidade" type="number">
+                <label>Peso por unidade (kg):</label>
+                <input name="peso" type="number" step="0.01">
+            </div>
+            <div class="row">
+                <label>Altura (cm):</label>
+                <input name="altura" type="number">
+                <label>Comprimento (cm):</label>
+                <input name="comprimento" type="number">
+                <label>Largura (cm):</label>
+                <input name="largura" type="number">
+            </div>
+            <div class="row">
+                <label>Origem:</label>
+                <input name="origem">
+                <label>Destino:</label>
+                <input name="destino">
+            </div>
+            <div class="row">
+                <label>Valor da carga (R$):</label>
+                <input name="valor_nf">
+                <label>Data de retirada:</label>
+                <input name="data_retirada" type="date">
+            </div>
+            <div class="row">
+                <label>Observações:</label>
+                <input name="observacoes">
+            </div>
+            <button type="submit">📝 Gerar Anúncio</button>
+        </form>
 
-    {% if resultado %}
-        <h2>📦 Volumetria total estimada: {{ volume_total }} m³</h2>
-        <h2>🚛 Distância: {{ distancia_valor }}</h2>
-        <p>{{ resultado | safe }}</p>
-        <p>
-            📄 <a href="/static/anuncio.pdf" target="_blank">PDF</a> &nbsp;
-            💬 <a href="{{ whatsapp_url }}" target="_blank">WhatsApp</a>
-        </p>
-    {% endif %}
+        {% if resultado %}
+            <div class="resultado">
+                <h2>📐 Volumetria e Medidas</h2>
+                {{ resultado | safe }}
+                <p>
+                    <a href="/static/anuncio.pdf" target="_blank">📄 PDF</a> |
+                    <a href="{{ whatsapp_url }}" target="_blank">📲 WhatsApp</a>
+                </p>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>

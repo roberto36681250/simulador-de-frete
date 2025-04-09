@@ -11,7 +11,7 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-GOOGLE_API_KEY = "AIzaSyCG1r6G2pk_v0cV6t5yEV_tAaobWxUSUic"  # Sua chave já integrada
+GOOGLE_API_KEY = "AIzaSyCG1r6G2pk_v0cV6t5yEV_tAaobWxUSUic"  # chave já integrada
 
 @app.get("/", response_class=HTMLResponse)
 async def form(request: Request):
@@ -37,7 +37,7 @@ async def gerar_anuncio(
     volume_m3 = volume_unit / 1_000_000
     volume_total = volume_m3 * quantidade
 
-    # Distância com API do Google Maps
+    # Distância com API do Google
     distancia_valor = ""
     try:
         url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={quote(origem)}&destinations={quote(destino)}&key={GOOGLE_API_KEY}"
@@ -60,7 +60,6 @@ async def gerar_anuncio(
     📝 <b>Observações:</b> {observacoes}
     """
 
-    # 🔧 Montar mensagem para WhatsApp sem usar f-string com \n diretamente
     texto_mensagem = (
         f"Olá, bom dia! Estou em busca de frete para entrega de {quantidade} {produto}.\n"
         f"Peso por unidade: {peso} kg\n"
@@ -85,3 +84,4 @@ async def gerar_anuncio(
         "whatsapp_url": whatsapp_url,
         "mensagem": texto_mensagem
     })
+

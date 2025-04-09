@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Anúncio de Frete</title>
+</head>
+<body>
+    <h1>Gerador de Anúncio de Frete</h1>
+    <form method="post">
+        <label>Produto/Carga</label>
+        <input type="text" name="produto"><br>
+        <label>Quantidade</label>
+        <input type="number" name="quantidade"><br>
+        <label>Peso por unidade (kg)</label>
+        <input type="text" name="peso"><br>
+        <label>Altura (cm)</label>
+        <input type="text" name="altura"><br>
+        <label>Comprimento (cm)</label>
+        <input type="text" name="comprimento"><br>
+        <label>Largura (cm)</label>
+        <input type="text" name="largura"><br>
+        <label>Origem</label>
+        <input type="text" name="origem"><br>
+        <label>Destino</label>
+        <input type="text" name="destino"><br>
+        <label>Valor da carga (R$)</label>
+        <input type="text" name="valor_nf"><br>
+        <label>Data de retirada</label>
+        <input type="text" name="data_retirada"><br>
+        <label>Observações</label>
+        <input type="text" name="observacoes"><br>
+        <button type="submit">Gerar Anúncio</button>
+    </form>
+    <hr>
+    <h3>Distância estimada: {{ distancia|safe }}</h3>
+    <div style="border:1px solid #ccc; padding:10px;">
+        {{ resultado|safe }}
+    </div>
+</body>
+</html>

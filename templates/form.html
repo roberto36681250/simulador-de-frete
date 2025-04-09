@@ -7,47 +7,54 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="title">🚛 Gerador de Anúncio de Frete</h1>
+    <h1 class="title">🚚 Gerador de Anúncio de Frete</h1>
 
     <form method="post" class="frete-form">
-        <label>Produto/Carga:<input type="text" name="produto"></label>
-        <label>Quantidade:<input type="number" name="quantidade"></label>
-        <label>Peso por unidade (kg):<input type="number" step="0.01" name="peso"></label>
-        <label>Altura (cm):<input type="number" step="0.1" name="altura"></label>
-        <label>Comprimento (cm):<input type="number" step="0.1" name="comprimento"></label>
-        <label>Largura (cm):<input type="number" step="0.1" name="largura"></label>
-        <label>Origem:<input type="text" name="origem"></label>
-        <label>Destino:<input type="text" name="destino"></label>
-        <label>Valor da carga (R$):<input type="text" name="valor_nf"></label>
-        <label>Data de retirada:<input type="date" name="data_retirada"></label>
+        <label>Produto/Carga:<input type="text" name="produto" required></label>
+        <label>Quantidade:<input type="number" name="quantidade" required></label>
+        <label>Peso por unidade (kg):<input type="number" step="0.01" name="peso" required></label>
+        <label>Altura (cm):<input type="number" step="0.1" name="altura" required></label>
+        <label>Comprimento (cm):<input type="number" step="0.1" name="comprimento" required></label>
+        <label>Largura (cm):<input type="number" step="0.1" name="largura" required></label>
+        <label>Origem:<input type="text" name="origem" required></label>
+        <label>Destino:<input type="text" name="destino" required></label>
+        <label>Valor da carga (R$):<input type="text" name="valor_nf" required></label>
+        <label>Data de retirada:<input type="date" name="data_retirada" required></label>
         <label>Observações:<input type="text" name="observacoes"></label>
 
         <div class="btn-group">
-            <button type="submit" class="btn">📝 Gerar Anúncio</button>
+            <button type="submit" class="btn">📄 Gerar Anúncio</button>
         </div>
     </form>
 
-    {% if volume_total %}
-        <div class="resultado">
-            <h2>📦 Volumetria total estimada: <strong>{{ volume_total }}</strong> m³</h2>
-        </div>
-    {% endif %}
-
     {% if distancia %}
-        <div class="resultado">
-            <h2>🚚 <strong>Distância:</strong> {{ distancia }}</h2>
-        </div>
+    <div class="resultado">
+        <h2>🧭 Distância estimada: {{ distancia }}</h2>
+    </div>
     {% endif %}
 
     {% if resultado %}
-        <div class="resultado">
-            <p>{{ resultado | safe }}</p>
-            <div class="btn-group">
-                <a href="#" onclick="window.print()" class="btn">📄 PDF</a>
-                <a href="{{ whatsapp_url }}" target="_blank" class="btn">💬 WhatsApp</a>
-            </div>
+    <div class="resultado">
+        <div class="bloco-anuncio">{{ resultado|safe }}</div>
+
+        <div class="btn-group">
+            <a href="#" class="btn" onclick="copiarTexto()">📋 Copiar</a>
+            <a href="https://wa.me/?text={{ resultado|replace('<br>', '\n')|urlencode }}" target="_blank" class="btn">📤 WhatsApp</a>
+            <a href="#" onclick="window.print()" class="btn">🧾 PDF</a>
         </div>
+    </div>
     {% endif %}
 </div>
+
+<script>
+function copiarTexto() {
+    const texto = document.querySelector('.bloco-anuncio').innerText;
+    navigator.clipboard.writeText(texto).then(() => {
+        alert('Texto copiado com sucesso!');
+    }).catch(() => {
+        alert('Erro ao copiar o texto.');
+    });
+}
+</script>
 </body>
 </html>

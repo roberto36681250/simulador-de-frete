@@ -1,3 +1,6 @@
+**form.html** (atualizado com melhorias de layout e integração do WhatsApp):
+
+```html
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -7,20 +10,20 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">🚛 Gerador de Anúncio de Frete</h1>
+        <h1 class="title">🚚 Gerador de Anúncio de Frete</h1>
 
         <form method="post" class="frete-form">
-            <label>Produto/Carga: <input type="text" name="produto"></label>
-            <label>Quantidade: <input type="number" name="quantidade"></label>
-            <label>Peso por unidade (kg): <input type="number" step="0.01" name="peso"></label>
-            <label>Altura (cm): <input type="number" step="0.1" name="altura"></label>
-            <label>Comprimento (cm): <input type="number" step="0.1" name="comprimento"></label>
-            <label>Largura (cm): <input type="number" step="0.1" name="largura"></label>
-            <label>Origem: <input type="text" name="origem"></label>
-            <label>Destino: <input type="text" name="destino"></label>
-            <label>Valor da carga (R$): <input type="text" name="valor_nf"></label>
-            <label>Data de retirada: <input type="date" name="data_retirada"></label>
-            <label>Observações: <input type="text" name="observacoes"></label>
+            <label>Produto/Carga:<input type="text" name="produto"></label>
+            <label>Quantidade:<input type="number" name="quantidade"></label>
+            <label>Peso por unidade (kg):<input type="number" step="0.01" name="peso"></label>
+            <label>Altura (cm):<input type="number" step="0.1" name="altura"></label>
+            <label>Comprimento (cm):<input type="number" step="0.1" name="comprimento"></label>
+            <label>Largura (cm):<input type="number" step="0.1" name="largura"></label>
+            <label>Origem:<input type="text" name="origem"></label>
+            <label>Destino:<input type="text" name="destino"></label>
+            <label>Valor da carga (R$):<input type="text" name="valor_nf"></label>
+            <label>Data de retirada:<input type="date" name="data_retirada"></label>
+            <label>Observações:<input type="text" name="observacoes"></label>
 
             <div class="btn-group">
                 <button type="submit" class="btn">📄 Gerar Anúncio</button>
@@ -29,7 +32,7 @@
 
         {% if distancia %}
             <div class="resultado">
-                <p>{{ distancia|safe }}</p>
+                <h2>{{ distancia|safe }}</h2>
             </div>
         {% endif %}
 
@@ -38,7 +41,7 @@
                 <div class="bloco-anuncio">{{ resultado|safe }}</div>
 
                 <div class="btn-group">
-                    <a href="#" class="btn" onclick="window.print()">🧾 PDF</a>
+                    <a href="#" class="btn" onclick="window.print()">🧓 PDF</a>
                     <a href="{{ whatsapp_url }}" target="_blank" class="btn">📤 WhatsApp</a>
                 </div>
             </div>
@@ -46,3 +49,6 @@
     </div>
 </body>
 </html>
+```
+
+Se quiser, também posso te gerar um `.zip` com tudo ajustado ou incluir um `style.css` bonitinho para deixar com visual ainda mais profissional. Deseja isso?

@@ -11,7 +11,7 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "SUA_CHAVE_AQUI")  # Substitua se necessário
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "SUA_CHAVE_AQUI")  # Substitua pela sua chave real
 
 @app.get("/", response_class=HTMLResponse)
 async def form(request: Request):
@@ -48,9 +48,9 @@ async def gerar_anuncio(
         distancia_valor = "Erro ao calcular distância"
 
     resultado = f"""
-    Olá, bom dia! Estou em busca de frete para entrega de {quantidade} {produto}. 📦<br>
-    Peso por unidade: {peso} kg ⚖️<br>
-    Peso total aproximado: {peso_total:.2f} kg ⚖️<br>
+    Olá, bom dia! Estou em busca de frete para entrega de {quantidade} {produto}.<br>
+    📦 Peso por unidade: {peso} kg<br>
+    ⚖️ Peso total aproximado: {peso_total:.2f} kg<br>
     📏 Medidas por unidade (cm): Altura {altura}, Comprimento {comprimento}, Largura {largura}<br>
     📦 Volumetria: {volume_unit:.0f} cm³ ({volume_m3:.3f} m³)<br>
     🧭 Distância estimada: {distancia_valor}<br>
@@ -67,6 +67,6 @@ async def gerar_anuncio(
     return templates.TemplateResponse("form.html", {
         "request": request,
         "resultado": resultado,
-        "distancia": f"📦 Volumetria total estimada: {volume_total:.3f} m³ 🚚 Distância: {distancia_valor}",
+        "distancia": f"<strong>📦 Volumetria total estimada: {volume_total:.3f} m³</strong><br>🧭 Distância estimada: {distancia_valor}",
         "whatsapp_url": whatsapp_url
     })

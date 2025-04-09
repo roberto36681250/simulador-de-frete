@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">🚛 <span style="color:green">Gerador de Anúncio de Frete</span></h1>
+        <h1 class="title">🚛 Gerador de Anúncio de Frete</h1>
 
         <form method="post" class="frete-form">
             <label>Produto/Carga:<input type="text" name="produto"></label>
@@ -28,20 +28,19 @@
         </form>
 
         {% if distancia %}
-        <div class="resultado">
-            <h2>📦 {{ distancia|safe }}</h2>
-        </div>
+            <div class="resultado">
+                <h2>📦 {{ distancia|safe }}</h2>
+            </div>
         {% endif %}
 
         {% if resultado %}
-        <div class="resultado">
-            <div class="bloco-anuncio">{{ resultado|safe }}</div>
-
-            <div class="btn-group">
-                <a href="#" class="btn" onclick="window.print()">🧾 PDF</a>
-                <a href="{{ whatsapp_url }}" target="_blank" class="btn">📤 WhatsApp</a>
+            <div class="resultado">
+                <div class="bloco-anuncio">{{ resultado.replace('\n', '<br>')|safe }}</div>
+                <div class="btn-group">
+                    <a href="#" class="btn" onclick="window.print()">🧾 PDF</a>
+                    <a href="{{ whatsapp_url }}" target="_blank" class="btn">📤 WhatsApp</a>
+                </div>
             </div>
-        </div>
         {% endif %}
     </div>
 </body>

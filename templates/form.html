@@ -1,49 +1,48 @@
-<!-- templates/form.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Simulador de Frete</title>
+    <title>Gerador de Anúncio de Frete</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Gerador de Anúncio de Frete</h1>
-        <form method="post">
-            <input type="text" name="produto" placeholder="Produto/Carga" required>
-            <input type="number" name="quantidade" placeholder="Quantidade" required>
-            <input type="number" step="any" name="peso" placeholder="Peso por unidade (kg)" required>
-            <input type="number" step="any" name="altura" placeholder="Altura (cm)" required>
-            <input type="number" step="any" name="comprimento" placeholder="Comprimento (cm)" required>
-            <input type="text" name="largura" placeholder="Largura (cm)" required>
-            <input type="text" name="origem" placeholder="Origem" required>
-            <input type="text" name="destino" placeholder="Destino" required>
-            <input type="text" name="valor_nf" placeholder="Valor da carga (R$)" required>
-            <input type="date" name="data_retirada" required>
-            <textarea name="observacoes" placeholder="Observações"></textarea>
-            <button type="submit">Gerar Anúncio</button>
+        <h1 class="title">🚚 Gerador de Anúncio de Frete</h1>
+
+        <form method="post" class="frete-form">
+            <label>Produto/Carga:<input type="text" name="produto"></label>
+            <label>Quantidade:<input type="number" name="quantidade"></label>
+            <label>Peso por unidade (kg):<input type="number" step="0.01" name="peso"></label>
+            <label>Altura (cm):<input type="number" step="0.1" name="altura"></label>
+            <label>Comprimento (cm):<input type="number" step="0.1" name="comprimento"></label>
+            <label>Largura (cm):<input type="text" name="largura"></label>
+            <label>Origem:<input type="text" name="origem"></label>
+            <label>Destino:<input type="text" name="destino"></label>
+            <label>Valor da carga (R$):<input type="text" name="valor_nf"></label>
+            <label>Data de retirada:<input type="date" name="data_retirada"></label>
+            <label>Observações:<input type="text" name="observacoes"></label>
+
+            <div class="btn-group">
+                <button type="submit" class="btn">📄 Gerar Anúncio</button>
+            </div>
         </form>
+
+        {% if distancia %}
+            <div class="resultado">
+                <h2>📏 {{ distancia|safe }}</h2>
+            </div>
+        {% endif %}
 
         {% if resultado %}
             <div class="resultado">
-                <h2>{{ distancia|safe }}</h2>
-                <p id="texto-anuncio">{{ resultado|safe }}</p>
+                <div class="bloco-anuncio">{{ resultado|safe }}</div>
 
-                <div class="botoes">
-                    <button onclick="window.print()">Gerar PDF</button>
-                    <a id="link-whatsapp" target="_blank">Compartilhar no WhatsApp</a>
+                <div class="btn-group">
+                    <a href="#" class="btn" onclick="window.print()">🧾 PDF</a>
+                    <a href="https://wa.me/?text={{ resultado|urlencode }}" target="_blank" class="btn">📤 WhatsApp</a>
                 </div>
             </div>
         {% endif %}
     </div>
-
-    <script>
-        const texto = document.getElementById("texto-anuncio")?.innerText;
-        const linkWhatsapp = document.getElementById("link-whatsapp");
-        if (linkWhatsapp && texto) {
-            const encoded = encodeURIComponent(texto);
-            linkWhatsapp.href = `https://wa.me/?text=${encoded}`;
-        }
-    </script>
 </body>
 </html>
